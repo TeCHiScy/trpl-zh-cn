@@ -2,7 +2,7 @@
 
 > [ch13-01-closures.md](https://github.com/rust-lang/book/blob/main/src/ch13-01-closures.md)
 > <br>
-> commit 8acef6cfd40a36be60a3c62458d9f78e2427e190
+> commit a2cb72d3ad7584cc1ae3b85f715c877872f5e3ab
 
 Rust 的 **闭包**（*closures*）是可以保存在一个变量中或作为参数传递给其他函数的匿名函数。可以在一个地方创建闭包，然后在不同的上下文中执行闭包运算。不同于函数，闭包允许捕获被定义时所在作用域中的值。我们将展示闭包的这些功能如何复用代码和自定义行为。
 
@@ -135,7 +135,7 @@ let add_one_v4 = |x|               x + 1  ;
 
 ### [](https://github.com/rust-lang/book/blob/main/src/ch13-01-closures.md#moving-captured-values-out-of-closures-and-the-fn-traits)将被捕获的值移出闭包和 `Fn`  trait
 
-一旦闭包捕获了它被定义的环境中一个值的引用或者所有权（也就影响了什么会被移_进_闭包，如有)，闭包体中的代码定义了稍后在闭包计算时对引用或值如何操作（也就影响了什么会被移_出_闭包，如有）。闭包体可以做以下任何事：将一个捕获的值移出闭包，修改捕获的值，既不移动也不修改值，或者一开始就不从环境中捕获值。
+一旦闭包捕获了定义它的环境中一个值的引用或所有权（也就影响了什么会被移 _进_ 闭包，如有)，闭包体中的代码就定义了闭包在稍后执行时怎样对引用或值进行操作（也就影响了什么会被移 _出_ 闭包，如有）。闭包体可以做以下任何事：将一个捕获的值移出闭包，修改捕获的值，既不移动也不修改值，或者一开始就不从环境中捕获值。
 
 闭包捕获和处理环境中的值的方式影响闭包实现的 trait。Trait 是函数和结构体指定它们能用的的闭包的类型的方式。取决于闭包体如何处理值，闭包自动、渐进地实现一个、两个或三个 `Fn` trait。
 
@@ -145,6 +145,7 @@ let add_one_v4 = |x|               x + 1  ;
 
 让我们来看示例 13-1 中使用的在 `Option<T>` 上的 `unwrap_or_else` 方法的定义：
 
+```rust
 impl<T> Option<T> {
     pub fn unwrap_or_else<F>(self, f: F) -> T
     where
@@ -156,8 +157,9 @@ impl<T> Option<T> {
         }
     }
 }
+```
 
-回忆 `T` 是表示 `Option` 中 `Some`  成员中的值的类型的范型。类型 `T`  也是 `unwrap_or_else`  函数的返回值类型：举例来说，在 `Option<String>` 上调用 `unwrap_or_else` 会得到一个 `String`。
+回忆 `T` 是表示 `Option` 中 `Some` 成员中的值的类型的范型。类型 `T` 也是 `unwrap_or_else` 函数的返回值类型：举例来说，在 `Option<String>` 上调用 `unwrap_or_else` 会得到一个 `String`。
 
 接着注意到 `unwrap_or_else`  函数有额外的范型参数 `F`。 `F` 是 `f` 参数（即调用 `unwrap_or_else` 时提供的闭包）的类型。
 
